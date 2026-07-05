@@ -8,7 +8,7 @@
 #include <riscv_macros.S>
 #include <riscv_vector.h>
 
-#if defined(CFG_WITH_VFP)
+#if defined(CFG_WITH_VFP) && defined(__riscv_vector)
 
 /*
  * size_t riscv_vector_state_size(void)
@@ -21,9 +21,9 @@ FUNC riscv_vector_state_size , :
         csrr    t1, sstatus
 
         /* 2. Temporarily enable the Vector extension (Set VS to 01) */
-        li      t2, ~SSTATUS_VS_MASK
+        li      t2, ~CSR_XSTATUS_VS_MASK
         and     t2, t1, t2               /* Clear existing VS bits */
-        li      t3, SSTATUS_VS_INIT
+        li      t3, CSR_XSTATUS_VS_INITIAL
         or      t2, t2, t3               /* Set VS to 01 (Initial) */
         csrw    sstatus, t2              /* Apply temporary sstatus */
 
@@ -101,4 +101,4 @@ FUNC riscv_vector_restore , :
 	ret
 END_FUNC riscv_vector_restore
 
-#endif /* CFG_WITH_VFP
+#endif /* CFG_WITH_VFP && __riscv_vector `*/
